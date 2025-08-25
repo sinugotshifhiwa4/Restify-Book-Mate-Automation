@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "playwright": "^1.55.0"
+  },
+  "name": "restify-book-mate-automation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^24.3.0"
+  },
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
