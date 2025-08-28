@@ -1,4 +1,26 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from "@playwright/test";
+import path from "path";
+import { TEST_TIMEOUT, EXPECT_TIMEOUT } from "./src/configuration/timeouts/timeout.config";
+import EnvironmentDetector from "./src/configuration/environment/detector/environmentDetector";
+import WorkerAllocator from "./src/configuration/environment/detector/workerAllocator";
+
+const isCI = EnvironmentDetector.isCI();
+
+const reportConfig = {
+  open: process.env.CI ? "never" : "always",
+  folderPath: "ortoni-report",
+  filename: "index.html",
+  logo: path.join(process.cwd(), ""),
+  title: "Restify BookMate Automation Test Report",
+  showProject: !true,
+  projectName: "restify-book-mate-automation",
+  testType: "e2e",
+  authorName: "Tshifhiwa Sinugo",
+  base64Image: false,
+  stdIO: false,
+  preferredTheme: "dark",
+  chartType: "doughnut",
+};
 
 /**
  * Read environment variables from file.
@@ -12,7 +34,12 @@ import { defineConfig, devices } from '@playwright/test';
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  testDir: './tests',
+  timeout: TEST_TIMEOUT,
+  expect: {
+    timeout: EXPECT_TIMEOUT,
+  },
+  testDir: "./tests",
+  globalSetup: "./src/configuration/environment/dotenv/global/globalSetup.ts",
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -20,34 +47,51 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  workers: EnvironmentDetector.isShardingEnabled()
+    ? WorkerAllocator.setupCIAllocator()
+    : WorkerAllocator.setLocalWorkerCount("fixed-2"),
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: isCI
+    ? [
+        ["html"],
+        ["junit", { outputFile: "results.xml" }],
+        ["playwright-trx-reporter", { outputFile: "results.trx" }],
+        ["dot"],
+      ]
+    : [
+        ["html", { open: "never" }],
+        ["ortoni-report", reportConfig],
+        ["junit", { outputFile: "results.xml" }],
+        ["dot"],
+      ],
+  grep:
+    typeof process.env.PLAYWRIGHT_GREP === "string"
+      ? new RegExp(process.env.PLAYWRIGHT_GREP)
+      : process.env.PLAYWRIGHT_GREP || /.*/,
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    // baseURL: 'http://localhost:3000',
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    trace: "retain-on-failure",
+    video: isCI ? "on" : "retain-on-failure",
+    screenshot: isCI ? "only-on-failure" : "on",
+    headless: isCI ? true : false,
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
     },
 
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
+    // {
+    //   name: "firefox",
+    //   use: { ...devices["Desktop Firefox"] },
+    // },
 
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
+    // {
+    //   name: "webkit",
+    //   use: { ...devices["Desktop Safari"] },
+    // },
 
     /* Test against mobile viewports. */
     // {
