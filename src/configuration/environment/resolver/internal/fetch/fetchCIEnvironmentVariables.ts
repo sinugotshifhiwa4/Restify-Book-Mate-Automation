@@ -15,6 +15,7 @@ export class FetchCIEnvironmentVariables {
   private readonly ciEnvironmentVariables: CIEnvironmentConfig = {
     urls: {
       portalBaseUrl: process.env.CI_PORTAL_BASE_URL!,
+      apiBaseUrl: process.env.CI_API_BASE_URL!,
     },
     users: {
       portal: {
@@ -24,6 +25,10 @@ export class FetchCIEnvironmentVariables {
       database: {
         username: process.env.CI_DATABASE_USERNAME!,
         password: process.env.CI_DATABASE_PASSWORD!,
+      },
+      api: {
+        username: process.env.CI_AUTH_USERNAME!,
+        password: process.env.CI_AUTH_PASSWORD!,
       },
     },
     database: {
@@ -39,6 +44,15 @@ export class FetchCIEnvironmentVariables {
       "ciPortalBaseUrl",
       "getPortalBaseUrl",
       "Failed to get CI portal base URL",
+    );
+  }
+
+  public async getApiBaseUrl(): Promise<string> {
+    return EnvironmentConfigManager.getEnvironmentVariable(
+      () => this.ciEnvironmentVariables.urls.apiBaseUrl,
+      "ciApiBaseUrl",
+      "getApiBaseUrl",
+      "Failed to get CI API base URL",
     );
   }
 
