@@ -12,6 +12,15 @@ export class FetchLocalEnvironmentVariables {
     );
   }
 
+  public async getApiBaseUrl(): Promise<string> {
+    return EnvironmentConfigManager.getEnvironmentVariable<string>(
+      () => ENV.API_BASE_URL,
+      "localApiBaseUrl",
+      "getApiBaseUrl",
+      "Failed to get local API base URL",
+    );
+  }
+
   public async getPortalCredentials(): Promise<Credentials> {
     EnvironmentConfigManager.verifyCredentials({
       username: ENV.PORTAL_USERNAME,

@@ -24,6 +24,15 @@ export class EnvironmentResolver {
     );
   }
 
+  public async getApiBaseUrl(): Promise<string> {
+    return EnvironmentConfigManager.getEnvironmentValue(
+      () => this.fetchCIEnvironmentVariables.getApiBaseUrl(),
+      () => this.FetchLocalEnvironmentVariables.getApiBaseUrl(),
+      "getApiBaseUrl",
+      "Failed to get API base URL",
+    );
+  }
+
   public async getPortalCredentials(): Promise<Credentials> {
     return EnvironmentConfigManager.getEnvironmentValue(
       () => this.fetchCIEnvironmentVariables.getPortalCredentials(),

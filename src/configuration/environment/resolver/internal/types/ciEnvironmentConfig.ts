@@ -8,11 +8,13 @@ export interface CIEnvironmentConfig {
 
 export interface Urls {
   portalBaseUrl: string;
+  apiBaseUrl: string;
 }
 
 export interface UserCredentialsSet {
   portal: Credentials;
   database: Credentials;
+  api: Credentials;
 }
 
 export interface DatabaseConnection {

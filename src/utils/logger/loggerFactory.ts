@@ -3,7 +3,7 @@ import moment from "moment-timezone";
 import path from "path";
 import * as fs from "fs";
 import { winstonLoggerConfig, LoggerDirectory } from "./logger.config";
-//import type { EnvironmentStage } from "../../config/environment/dotenv/environment.config";
+import type { EnvironmentStage } from "../../configuration/environment/dotenv/environment.config";
 
 export default class LoggerFactory {
   public static createLogger(): winston.Logger {
@@ -17,7 +17,7 @@ export default class LoggerFactory {
         fileTransports.warn,
         fileTransports.error,
         fileTransports.debug,
-        //this.createConsoleTransport(),
+        this.createConsoleTransport(),
       ],
       exceptionHandlers: [this.createCustomHandler("exceptions.log")],
       rejectionHandlers: [this.createCustomHandler("rejections.log")],
@@ -84,12 +84,12 @@ export default class LoggerFactory {
     };
   }
 
-  // private static createConsoleTransport(): winston.transports.ConsoleTransportInstance {
-  //   return new winston.transports.Console({
-  //     level: this.getConsoleLogLevel((process.env.ENV as EnvironmentStage) || "dev"),
-  //     format: this.createConsoleFormat(),
-  //   });
-  // }
+  private static createConsoleTransport(): winston.transports.ConsoleTransportInstance {
+    return new winston.transports.Console({
+      level: this.getConsoleLogLevel((process.env.ENV as EnvironmentStage) || "dev"),
+      format: this.createConsoleFormat(),
+    });
+  }
 
   private static createConsoleFormat(): winston.Logform.Format {
     return winston.format.combine(
@@ -121,16 +121,16 @@ export default class LoggerFactory {
     );
   }
 
-  // private static getConsoleLogLevel(environment: EnvironmentStage): string {
-  //   const levelMap: Record<EnvironmentStage, string> = {
-  //     dev: winstonLoggerConfig.logLevels.debug,
-  //     qa: winstonLoggerConfig.logLevels.debug,
-  //     uat: winstonLoggerConfig.logLevels.info,
-  //     preprod: winstonLoggerConfig.logLevels.warn,
-  //     prod: winstonLoggerConfig.logLevels.error,
-  //   };
-  //   return levelMap[environment] || winstonLoggerConfig.logLevels.debug;
-  // }
+  private static getConsoleLogLevel(environment: EnvironmentStage): string {
+    const levelMap: Record<EnvironmentStage, string> = {
+      dev: winstonLoggerConfig.logLevels.debug,
+      qa: winstonLoggerConfig.logLevels.debug,
+      uat: winstonLoggerConfig.logLevels.info,
+      preprod: winstonLoggerConfig.logLevels.warn,
+      prod: winstonLoggerConfig.logLevels.error,
+    };
+    return levelMap[environment] || winstonLoggerConfig.logLevels.debug;
+  }
 
   private static ensureDirExists(): void {
     const directory = LoggerDirectory.DIRECTORY;

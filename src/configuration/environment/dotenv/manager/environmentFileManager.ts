@@ -84,7 +84,7 @@ export class EnvironmentFileManager {
   }
 
   private static buildSecretKeyVariable(stage: EnvironmentStage): string {
-    return `${ENVIRONMENT_CONSTANTS.SECRET_KEY_VAR_PREFIX}_${stage.toUpperCase()}`;
+    return `${stage.toUpperCase()}_${ENVIRONMENT_CONSTANTS.SECRET_KEY_VAR_PREFIX}`;
   }
 
   private static validateStage(stage: EnvironmentStage, methodName: string): void {
