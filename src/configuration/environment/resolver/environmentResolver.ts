@@ -42,6 +42,15 @@ export class EnvironmentResolver {
     );
   }
 
+  public async getApiCredentials(): Promise<Credentials> {
+    return EnvironmentConfigManager.getEnvironmentValue(
+      () => this.fetchCIEnvironmentVariables.getApiCredentials(),
+      () => this.FetchLocalEnvironmentVariables.getApiCredentials(),
+      "getApiCredentials",
+      "Failed to get API credentials",
+    );
+  }
+
   public async getDatabaseCredentials(): Promise<Credentials> {
     return EnvironmentConfigManager.getEnvironmentValue(
       () => this.fetchCIEnvironmentVariables.getDatabaseCredentials(),
