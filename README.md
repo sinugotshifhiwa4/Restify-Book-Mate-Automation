@@ -80,7 +80,7 @@ expect: TIMEOUTS.expect
 
 - TypeScript-aware ESLint rules
 - Prettier integration
-- Only `console.warn` and `console.error` allowed
+- Only `console.error` allowed
 - VS Code is pre-configured for format-on-save
 
 Configuration files:
@@ -88,5 +88,62 @@ Configuration files:
 - `.prettierrc`
 - `.vscode/settings.json`
 - `eslint.config.mjs`
+
+---
+
+## Running Tests
+
+Use the following format:
+
+```bash
+npm run test:<type>
+```
+
+- `<type>` can be: `encryption`, `ui`, `api`, `db`, `all`, or `failed`
+- `<env>` = `dev`, `qa`, `uat`, `prod`
+
+### Available Commands
+
+| Command                   | Description                       |
+| ------------------------- | --------------------------------- |
+| `npm run test:ui`         | Run UI tests                      |
+| `npm run test:api`        | Run API tests                     |
+| `npm run test:db`         | Run DB tests                      |
+| `npm run test:all`        | Run all test suites               |
+| `npm run test:failed`     | Re-run only the last failed tests |
+| `npm run ui`              | Launch Playwright UI runner       |
+| `npm run record`          | Open Playwright Codegen tool      |
+| `npm run report`          | Open the last HTML test report    |
+
+
+Example:
+
+```bash
+npx cross-env ENV=dev npm run test:ui
+```
+
+To launch the Playwright UI:
+
+```bash
+npm run ui
+```
+
+---
+
+## Running Tests by Tag
+
+```bash
+npx cross-env PLAYWRIGHT_GREP=@sanity ENV=dev npm run test:<type>
+```
+
+Where:
+
+- `<type>` = `encryption`, `ui`, `api`, `db`, `all`, `failed`
+- `<env>` = `dev`, `qa`, `uat`, `prod`
+
+| Tag           | Description                 |
+| ------------- | --------------------------- |
+| `@sanity`     | Sanity checks (UI, API, DB) |
+| `@regression` | Full regression suite       |
 
 ---

@@ -34,6 +34,19 @@ export class FetchLocalEnvironmentVariables {
     );
   }
 
+  public async getApiCredentials(): Promise<Credentials> {
+    EnvironmentConfigManager.verifyCredentials({
+      username: ENV.AUTH_USERNAME,
+      password: ENV.AUTH_PASSWORD,
+    });
+
+    return EnvironmentConfigManager.decryptCredentials(
+      ENV.AUTH_USERNAME,
+      ENV.AUTH_PASSWORD,
+      EnvironmentConfigManager.getCurrentEnvSecretKey(),
+    );
+  }
+
   public async getDatabaseServerName(): Promise<string> {
     return EnvironmentConfigManager.getEnvironmentVariable<string>(
       () => ENV.DATABASE_SERVER_NAME,

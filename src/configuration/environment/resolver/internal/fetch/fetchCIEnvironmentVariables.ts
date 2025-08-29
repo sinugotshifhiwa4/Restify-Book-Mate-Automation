@@ -77,6 +77,27 @@ export class FetchCIEnvironmentVariables {
     return credentials;
   }
 
+  public async getApiCredentials(): Promise<Credentials> {
+    const username = await EnvironmentConfigManager.getEnvironmentVariable(
+      () => this.ciEnvironmentVariables.users.api.username,
+      "ciApiUsername",
+      "getApiCredentials",
+      "Failed to get CI API username",
+    );
+
+    const password = await EnvironmentConfigManager.getEnvironmentVariable(
+      () => this.ciEnvironmentVariables.users.api.password,
+      "ciApiPassword",
+      "getApiCredentials",
+      "Failed to get CI API password",
+    );
+
+    const credentials = { username, password };
+    EnvironmentConfigManager.verifyCredentials(credentials);
+
+    return credentials;
+  }
+
   public async getDatabaseCredentials(): Promise<Credentials> {
     const username = await EnvironmentConfigManager.getEnvironmentVariable(
       () => this.ciEnvironmentVariables.users.database.username,
