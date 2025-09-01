@@ -23,7 +23,9 @@
     "viewports",
     "maxsize",
     "ortoni",
-    "uncolorize"
+    "uncolorize",
+    "checkin",
+    "checkout"
   ],
   "cSpell.ignorePaths": [
     "node_modules/**",

@@ -1,6 +1,6 @@
 import { test, expect } from "../../../fixtures/restifyBookmate.fixture";
 import ApiResponseHelper from "../../../src/layers/api/response/apiResponseHelper";
-import { AuthSuccessResponse, AuthFailureResponse } from "../../../src/layers/api/response/types/authToken.type";
+import { AuthSuccessResponse, AuthFailureResponse } from "../../../src/layers/api/response/types/bookingResponse.types";
 import logger from "../../../src/utils/logger/loggerManager";
 
 test.describe("Authentication Token Test Suite", () => {
