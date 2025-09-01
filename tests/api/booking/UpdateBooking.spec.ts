@@ -80,7 +80,6 @@ test.describe("Update Booking Test Suite", () => {
 
     const responseBody = await ApiResponseHelper.parseJson<Booking>(response);
     expect(responseBody).toMatchObject({ ...updatePayload });
-    logger.info(`Partially Updated Booking Response: ${JSON.stringify(responseBody)}`);
 
     logger.info(`Verified: Booking with ID ${bookingId} partially updated successfully`);
   });
