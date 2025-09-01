@@ -7,7 +7,7 @@ export interface AuthOptions {
     password: string;
   };
   customHeaders?: Record<string, string>;
-  cookies?: string;
+  cookies?: Record<string, string>;
 }
 
 export interface HttpClientConfig {
