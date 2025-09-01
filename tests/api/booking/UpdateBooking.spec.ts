@@ -5,7 +5,7 @@ import { Booking } from "../../../src/layers/api/request/types/bookingRequest.ty
 import BookingUtils from "../../../src/layers/api/request/bookingUtils";
 import logger from "../../../src/utils/logger/loggerManager";
 
-test.describe.only("Update Booking Test Suite", () => {
+test.describe("Update Booking Test Suite", () => {
   test(" Verify booking is updated by ID @sanity", async ({ apiClient, environmentResolver }) => {
     // Generate token
     const authPayload = await environmentResolver.getApiCredentials();
