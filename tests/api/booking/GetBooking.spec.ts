@@ -39,6 +39,5 @@ test.describe("Get Booking Test Suite", () => {
   });
 });
 
-// Verify booking is deleted @regression
-
 // Verify booking returns validation error for invalid dates @negative
+// another one is ping
