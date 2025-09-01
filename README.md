@@ -36,7 +36,7 @@ Sensitive credentials are encrypted using **AES-GCM** with **Argon2** key deriva
 To encrypt credentials:
 
 ```bash
-npx cross-env PLAYWRIGHT_GREP=@full-encryption ENV=dev npm run test:encryption
+npx cross-env PLAYWRIGHT_GREP=@full-encryption ENV=<env> npm run test:encryption
 ```
 
 - Use `ENV=uat` for uat
@@ -96,7 +96,7 @@ Configuration files:
 Use the following format:
 
 ```bash
-npm run test:<type>
+npx cross-env ENV=<env> npm run test:<type>
 ```
 
 - `<type>` can be: `encryption`, `ui`, `api`, `db`, `all`, or `failed`
@@ -133,7 +133,7 @@ npm run ui
 ## Running Tests by Tag
 
 ```bash
-npx cross-env PLAYWRIGHT_GREP=@sanity ENV=dev npm run test:<type>
+npx cross-env PLAYWRIGHT_GREP=@<tag> ENV=<env> npm run test:<type>
 ```
 
 Where:
