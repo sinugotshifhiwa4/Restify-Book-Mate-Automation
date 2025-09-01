@@ -42,11 +42,3 @@ test.describe("Create Booking Test Suite", () => {
     logger.info(`Verified: Booking created successfully with id=${responseBody.bookingid}`);
   });
 });
-
-// Verify booking is retrieved by ID @regression
-
-// Verify booking is updated successfully @smoke
-
-// Verify booking is deleted @regression
-
-// Verify booking returns validation error for invalid dates @negative

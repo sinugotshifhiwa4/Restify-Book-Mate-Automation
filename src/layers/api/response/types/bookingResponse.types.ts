@@ -9,6 +9,12 @@ export interface AuthFailureResponse {
 }
 
 export interface BookingResponse {
-  bookingid: number;
+  bookingid: BookingId;
   booking: Booking;
 }
+
+export interface BookingId {
+  bookingid: number;
+}
+
+export type AllBookingResponse = BookingId[];
