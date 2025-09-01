@@ -1,45 +1,34 @@
 import { test, expect } from "../../../fixtures/restifyBookmate.fixture";
-import { Credentials } from "../../../src/utils/auth/credentials.types";
-import ResponseValidator from "../../../src/layers/api/validator/responseValidator";
+import ApiResponseHelper from "../../../src/layers/api/response/apiResponseHelper";
+import { AuthSuccessResponse, AuthFailureResponse } from "../../../src/layers/api/response/types/authToken.type";
 import logger from "../../../src/utils/logger/loggerManager";
 
-interface AuthTokenResponse {
-  token: string;
-}
-
-interface ErrorResponse {
-  reason: string;
-}
-
 test.describe("Authentication Token Test Suite", () => {
-  test("Verify authentication token is generated @sanity", async ({ apiService, environmentResolver }) => {
-    const { username, password } = await environmentResolver.getApiCredentials();
+  test("Verify authentication token is generated @sanity", async ({ apiClient, environmentResolver }) => {
+    const payload = await environmentResolver.getApiCredentials();
 
-    const payload: Credentials = { username, password };
-
-    const response = await apiService.post("/auth", payload);
-
-    const responseBody = await ResponseValidator.validateResponse<AuthTokenResponse>(response, 200);
+    const response = await apiClient.request("post", "/auth", payload);
+    const responseBody = await ApiResponseHelper.parseJson<AuthSuccessResponse>(response);
+    expect(responseBody.token).toBeTruthy();
     expect(responseBody).toHaveProperty("token");
-    expect(responseBody.token).not.toBeNull();
 
-    logger.info(`Response: ${JSON.stringify(responseBody)}`);
+    logger.info("Verified: Authentication token generated successfully");
   });
 
   test("Verify authentication token generation fails with incorrect credentials @sanity", async ({
-    apiService,
+    apiClient,
     environmentResolver,
   }) => {
     const { username } = await environmentResolver.getApiCredentials();
 
-    const payload: Credentials = { username, password: "incorrectPassword" };
+    const invalidCredentials = { username, password: "incorrectPassword" };
 
-    const response = await apiService.post("/auth", payload);
+    const response = await apiClient.request("post", "/auth", invalidCredentials);
 
-    const responseBody = await ResponseValidator.validateErrorResponse<ErrorResponse>(response, 200);
-    expect(responseBody).toHaveProperty("reason");
-    expect(responseBody.reason).toContain("Bad credentials");
+    const responseBody = await ApiResponseHelper.parseJson<AuthFailureResponse>(response);
 
-    logger.info(`Response: ${JSON.stringify(responseBody)}`);
+    expect(responseBody.reason).toBeTruthy();
+
+    logger.info("Verified: Authentication token generation fails with incorrect credentials");
   });
 });

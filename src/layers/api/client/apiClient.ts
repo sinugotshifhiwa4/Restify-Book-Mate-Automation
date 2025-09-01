@@ -1,10 +1,13 @@
 import { APIRequestContext, request, APIResponse } from "@playwright/test";
 import { RequestOptions, HttpClientConfig } from "./client.types.ts";
+import { EnvironmentResolver } from "../../../configuration/environment/resolver/environmentResolver";
+import { API_TIMEOUT } from "../../../configuration/timeouts/timeout.config";
+import { Credentials } from "../../../utils/auth/credentials.types.js";
+import ErrorHandler from "../../../utils/errorHandling/errorHandler";
 
 export class ApiClient {
   private readonly defaultHeaders: Record<string, string>;
   private requestContext?: APIRequestContext;
-
   private static readonly STANDARD_JSON_HEADERS: Record<string, string> = {
     "Content-Type": "application/json",
     Accept: "application/json",
@@ -18,17 +21,28 @@ export class ApiClient {
   }
 
   /**
+   * Static factory method to create ApiClient with environment resolver
+   */
+  public static async create(environmentResolver: EnvironmentResolver): Promise<ApiClient> {
+    const baseApiUrl = await environmentResolver.getApiBaseUrl();
+    return new ApiClient({
+      baseURL: baseApiUrl,
+      timeout: API_TIMEOUT.connection,
+      ignoreHTTPSErrors: false,
+    });
+  }
+
+  /**
    * Execute HTTP request with specified method and options
    * Lazily initializes context on first request
    */
-  public async executeRequest(
+  public async request(
     httpMethod: "get" | "post" | "put" | "patch" | "delete",
     endpoint: string,
-    requestOptions?: RequestOptions,
     requestData?: unknown,
+    requestOptions?: RequestOptions,
   ): Promise<APIResponse> {
     await this.ensureContextInitialized();
-
     const requestHeaders = this.buildRequestHeaders(requestOptions);
 
     if (this.isReadOnlyMethod(httpMethod)) {
@@ -53,9 +67,13 @@ export class ApiClient {
 
   private async ensureContextInitialized(): Promise<void> {
     if (!this.requestContext) {
+      if (!this.config.baseURL) {
+        ErrorHandler.logAndThrow("ApiClient", "Base URL not configured");
+      }
+
       this.requestContext = await request.newContext({
         baseURL: this.config.baseURL,
-        timeout: this.config.timeout || 30000,
+        timeout: this.config.timeout || 15000,
         ignoreHTTPSErrors: this.config.ignoreHTTPSErrors || false,
         extraHTTPHeaders: this.defaultHeaders,
       });
@@ -101,7 +119,7 @@ export class ApiClient {
     }
 
     if (authConfig.cookies) {
-      headers["Cookie"] = authConfig.cookies;
+      headers["Cookie"] = this.formatCookies(authConfig.cookies);
     }
 
     if (authConfig.customHeaders) {
@@ -109,11 +127,17 @@ export class ApiClient {
     }
   }
 
+  private formatCookies(cookies: Record<string, string>): string {
+    return Object.entries(cookies)
+      .map(([key, value]) => `${key}=${value}`)
+      .join("; ");
+  }
+
   private formatBearerToken(token: string): string {
     return token.startsWith("Bearer ") ? token : `Bearer ${token}`;
   }
 
-  private createBasicAuthHeader(credentials: { username: string; password: string }): string {
+  private createBasicAuthHeader(credentials: Credentials): string {
     const { username, password } = credentials;
     const encodedCredentials = Buffer.from(`${username}:${password}`).toString("base64");
     return `Basic ${encodedCredentials}`;

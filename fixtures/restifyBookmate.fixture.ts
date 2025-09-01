@@ -2,13 +2,13 @@ import { test as baseTest } from "@playwright/test";
 import { FetchCIEnvironmentVariables } from "../src/configuration/environment/resolver/internal/fetch/fetchCIEnvironmentVariables";
 import { FetchLocalEnvironmentVariables } from "../src/configuration/environment/resolver/internal/fetch/fetchLocalEnvironmentVariables";
 import { EnvironmentResolver } from "../src/configuration/environment/resolver/environmentResolver";
-import { ApiService } from "../src/layers/api/client/apiService";
+import { ApiClient } from "../src/layers/api/client/apiClient";
 
 type RestifyBookMateFixtures = {
   fetchCIEnvironmentVariables: FetchCIEnvironmentVariables;
   fetchLocalEnvironmentVariables: FetchLocalEnvironmentVariables;
   environmentResolver: EnvironmentResolver;
-  apiService: ApiService;
+  apiClient: ApiClient;
 };
 
 export const restifyBookMateTests = baseTest.extend<RestifyBookMateFixtures>({
@@ -31,10 +31,10 @@ export const restifyBookMateTests = baseTest.extend<RestifyBookMateFixtures>({
     await use(resolver);
   },
 
-  apiService: async ({ environmentResolver }, use) => {
-    const service = await ApiService.create(environmentResolver);
-    await use(service);
-    await service.dispose();
+  apiClient: async ({ environmentResolver }, use) => {
+    const client = await ApiClient.create(environmentResolver);
+    await use(client);
+    await client.dispose();
   },
 });
 
