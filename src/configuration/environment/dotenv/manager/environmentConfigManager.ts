@@ -7,27 +7,6 @@ import { EnvironmentStage } from "../environment.config";
 import ErrorHandler from "../../../../utils/errorHandling/errorHandler";
 
 export default class EnvironmentConfigManager {
-  /**
-   * Generic method to fetch environment variables based on environment
-   * @param ciMethod - Method to call in CI environment
-   * @param localMethod - Method to call in local environment
-   * @param methodName - Name of the calling method for error tracking
-   * @param errorMessage - Error message for failures
-   */
-  public static async getEnvironmentValue<T>(
-    ciMethod: () => Promise<T>,
-    localMethod: () => Promise<T>,
-    methodName: string,
-    errorMessage: string,
-  ): Promise<T> {
-    try {
-      return await (EnvironmentDetector.isCI() ? ciMethod() : localMethod());
-    } catch (error) {
-      ErrorHandler.captureError(error, methodName, errorMessage);
-      throw error;
-    }
-  }
-
   public static async getEnvironmentVariable<T>(
     getValue: () => T,
     variableName: string,
@@ -36,7 +15,7 @@ export default class EnvironmentConfigManager {
   ): Promise<T> {
     try {
       const value = getValue();
-      this.validateEnvironmentVariable(String(value), variableName); // Validate string form
+      this.validateEnvironmentVariable(String(value), variableName);
 
       const shouldSanitize = EnvironmentDetector.isCI();
 
